@@ -26,6 +26,9 @@ ASWeapon::ASWeapon()
 
 	MuzzleSocketName = "MuzzleSocket";
 	TracerTargetName = "Target";
+
+	BaseDamage = 20.0f;
+	VulnerableDamageMul = 4.0f;
 }
 
 void ASWeapon::Fire()
@@ -59,9 +62,14 @@ void ASWeapon::Fire()
 			// Blocking hit! Process damage
 			AActor* HitActor = Hit.GetActor();
 
-			UGameplayStatics::ApplyPointDamage(HitActor, 20.f, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
-
 			EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(Hit.PhysMaterial.Get());
+
+			float ActualDamage = BaseDamage;
+			if (SurfaceType == SURFACE_FLESHVULNERABLE)
+				ActualDamage *= VulnerableDamageMul;
+
+			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+
 			UParticleSystem* SelectedEffect = nullptr;
 			
 			switch (SurfaceType)
