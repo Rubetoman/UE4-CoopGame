@@ -28,6 +28,9 @@ ASCharacter::ASCharacter()
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	DefaultFOV = CameraComp->FieldOfView;
+	TargetFOV = DefaultFOV;
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -50,11 +53,26 @@ void ASCharacter::EndCrouch()
 	UnCrouch();
 }
 
+void ASCharacter::BeginZoom()
+{
+	TargetFOV = ZoomedFOV;
+}
+
+void ASCharacter::EndZoom()
+{
+	TargetFOV = DefaultFOV;
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (TargetFOV != CameraComp->FieldOfView)
+	{
+		float newFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, ZoomInterpSpeed);
+		CameraComp->SetFieldOfView(newFOV);
+	}
 }
 
 // Called to bind functionality to input
@@ -72,6 +90,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ASCharacter::EndCrouch);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+
+	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &ASCharacter::BeginZoom);
+	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &ASCharacter::EndZoom);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
