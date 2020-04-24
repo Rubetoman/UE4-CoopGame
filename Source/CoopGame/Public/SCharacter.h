@@ -32,8 +32,12 @@ protected:
 	void BeginZoom();
 	void EndZoom();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartFire();
 	void StopFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	ASWeapon* GetCurrentWeapon();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp = nullptr;

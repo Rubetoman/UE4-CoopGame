@@ -89,6 +89,11 @@ void ASCharacter::StopFire()
 		CurrentWeapon->StopFire();
 }
 
+ASWeapon* ASCharacter::GetCurrentWeapon()
+{
+	return CurrentWeapon;
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {

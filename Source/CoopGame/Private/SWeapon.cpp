@@ -32,6 +32,9 @@ ASWeapon::ASWeapon()
 	VulnerableDamageMul = 4.0f;
 
 	RateOfFire = 600;
+
+	MaxAmmo = 30;
+	CurrentAmmo = MaxAmmo;
 }
 
 void ASWeapon::BeginPlay()
@@ -43,8 +46,10 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::StartFire()
 {
-	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	
+		float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	
 }
 
 void ASWeapon::StopFire()
@@ -54,8 +59,9 @@ void ASWeapon::StopFire()
 
 void ASWeapon::Fire()
 {
-	// Trace the world. from pawn eyes to crosshair location
+	if (CurrentAmmo <= 0) return;
 
+	// Trace the world. from pawn eyes to crosshair location
 	AActor* MyOwner = GetOwner();
 
 	if (MyOwner != nullptr)
@@ -117,6 +123,8 @@ void ASWeapon::Fire()
 		PlayFireEffects(TracerEndPoint);
 
 		LastFireTime = GetWorld()->TimeSeconds;
+
+		--CurrentAmmo;
 	}
 }
 

@@ -71,4 +71,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float VulnerableDamageMul;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	uint8 MaxAmmo;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	uint8 CurrentAmmo;
 };
