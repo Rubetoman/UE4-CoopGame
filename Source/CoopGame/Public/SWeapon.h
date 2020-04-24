@@ -21,10 +21,14 @@ public:
 	void StartFire();
 	void StopFire();
 
+	void StartReload();
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void Fire();
+
+	void Reload();
 
 	void PlayFireEffects(FVector TracerEndPoint);
 
@@ -77,4 +81,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	uint8 CurrentAmmo;
+
+	FTimerHandle TimerHandle_ReloadTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float ReloadTime;
 };

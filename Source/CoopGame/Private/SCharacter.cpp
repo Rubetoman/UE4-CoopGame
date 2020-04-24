@@ -25,6 +25,8 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	WeaponAttachSocketName = "WeaponSocket";
+
+	isReloading = false;
 }
 
 // Called when the game starts or when spawned
@@ -89,6 +91,12 @@ void ASCharacter::StopFire()
 		CurrentWeapon->StopFire();
 }
 
+void ASCharacter::Reload()
+{
+	if (CurrentWeapon != nullptr)
+		CurrentWeapon->StartReload();
+}
+
 ASWeapon* ASCharacter::GetCurrentWeapon()
 {
 	return CurrentWeapon;
@@ -127,6 +135,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASCharacter::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASCharacter::StopFire);
+
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASCharacter::Reload);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

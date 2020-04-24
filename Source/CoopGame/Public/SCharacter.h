@@ -36,6 +36,8 @@ protected:
 	void StartFire();
 	void StopFire();
 
+	void Reload();
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ASWeapon* GetCurrentWeapon();
 
@@ -63,6 +65,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
 	FName WeaponAttachSocketName;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	bool isReloading;
 
 public:	
 	// Called every frame

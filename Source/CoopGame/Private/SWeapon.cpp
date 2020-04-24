@@ -35,6 +35,8 @@ ASWeapon::ASWeapon()
 
 	MaxAmmo = 30;
 	CurrentAmmo = MaxAmmo;
+
+	ReloadTime = 1.0f;
 }
 
 void ASWeapon::BeginPlay()
@@ -46,15 +48,18 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::StartFire()
 {
-	
-		float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
-	
+	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
 }
 
 void ASWeapon::StopFire()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+}
+
+void ASWeapon::StartReload()
+{
+	GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
 }
 
 void ASWeapon::Fire()
@@ -126,6 +131,12 @@ void ASWeapon::Fire()
 
 		--CurrentAmmo;
 	}
+}
+
+void ASWeapon::Reload()
+{
+	CurrentAmmo = MaxAmmo;
+	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
