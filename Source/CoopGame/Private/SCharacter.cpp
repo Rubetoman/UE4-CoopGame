@@ -25,8 +25,6 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	WeaponAttachSocketName = "WeaponSocket";
-
-	isReloading = false;
 }
 
 // Called when the game starts or when spawned
@@ -93,13 +91,21 @@ void ASCharacter::StopFire()
 
 void ASCharacter::Reload()
 {
-	if (CurrentWeapon != nullptr)
+	if (CurrentWeapon != nullptr && !CurrentWeapon->bIsReloading)
 		CurrentWeapon->StartReload();
 }
 
 ASWeapon* ASCharacter::GetCurrentWeapon()
 {
 	return CurrentWeapon;
+}
+
+bool ASCharacter::GetIsReloading()
+{
+	if (CurrentWeapon != nullptr)
+		return CurrentWeapon->bIsReloading;
+
+	return false;
 }
 
 // Called every frame

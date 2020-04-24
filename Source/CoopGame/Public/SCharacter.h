@@ -41,6 +41,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ASWeapon* GetCurrentWeapon();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool GetIsReloading();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp = nullptr;
 
@@ -65,9 +68,6 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
 	FName WeaponAttachSocketName;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	bool isReloading;
 
 public:	
 	// Called every frame

@@ -36,7 +36,8 @@ ASWeapon::ASWeapon()
 	MaxAmmo = 30;
 	CurrentAmmo = MaxAmmo;
 
-	ReloadTime = 1.0f;
+	ReloadTime = 2.0f;
+	bIsReloading = false;
 }
 
 void ASWeapon::BeginPlay()
@@ -60,11 +61,22 @@ void ASWeapon::StopFire()
 void ASWeapon::StartReload()
 {
 	GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
+	bIsReloading = true;
+}
+
+void ASWeapon::StopReload()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
+	bIsReloading = false;
 }
 
 void ASWeapon::Fire()
 {
 	if (CurrentAmmo <= 0) return;
+
+	// Stop reload
+	if (bIsReloading)
+		StopReload();
 
 	// Trace the world. from pawn eyes to crosshair location
 	AActor* MyOwner = GetOwner();
@@ -137,6 +149,7 @@ void ASWeapon::Reload()
 {
 	CurrentAmmo = MaxAmmo;
 	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
+	StopReload();
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)

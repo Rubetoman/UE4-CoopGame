@@ -22,6 +22,10 @@ public:
 	void StopFire();
 
 	void StartReload();
+	void StopReload();
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
+	bool bIsReloading;
 
 protected:
 	virtual void BeginPlay() override;
