@@ -40,6 +40,9 @@ protected:
 
 	void ToggleFireType();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+	void OnToggleFireType();
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ASWeapon* GetCurrentWeapon();
 

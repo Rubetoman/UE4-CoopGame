@@ -26,6 +26,9 @@ public:
 
 	void ToggleFireType();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	FText GetCurrentFireTypeName();
+
 	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 

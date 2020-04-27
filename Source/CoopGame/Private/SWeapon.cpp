@@ -86,6 +86,16 @@ void ASWeapon::ToggleFireType()
 		--FireType;
 }
 
+FText ASWeapon::GetCurrentFireTypeName()
+{
+	switch (FireType)
+	{
+	case 0: return FText::FromString("Auto");  break;
+	case 1: return FText::FromString("Semi-Auto"); break;
+	default: return FText(); break;
+	}
+}
+
 void ASWeapon::Fire()
 {
 	if (CurrentAmmo <= 0) return;

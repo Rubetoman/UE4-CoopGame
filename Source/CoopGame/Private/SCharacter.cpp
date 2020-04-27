@@ -98,7 +98,10 @@ void ASCharacter::Reload()
 void ASCharacter::ToggleFireType()
 {
 	if (CurrentWeapon != nullptr)
+	{
 		CurrentWeapon->ToggleFireType();
+		OnToggleFireType();	// Blueprint implemented
+	}
 }
 
 ASWeapon* ASCharacter::GetCurrentWeapon()
