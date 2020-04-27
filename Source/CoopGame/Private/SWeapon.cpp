@@ -38,7 +38,7 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RateOfFire = 600;
+	RateOfFire = 300;
 	TimeBetweenShots = 60 / RateOfFire;
 
 	MaxFireTypes = 1;
@@ -70,8 +70,11 @@ void ASWeapon::StopFire()
 
 void ASWeapon::StartReload()
 {
-	GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
-	bIsReloading = true;
+	if (CurrentAmmo < MaxAmmo)
+	{
+		GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
+		bIsReloading = true;
+	}
 }
 
 void ASWeapon::StopReload()
