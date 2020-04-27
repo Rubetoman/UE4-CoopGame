@@ -44,8 +44,13 @@ protected:
 
 	void ToggleFireType();
 
+	void StartNextWeapon();
 	void NextWeapon();
+	void EndNextWeapon();
+
+	void StartPreviousWeapon();
 	void PreviousWeapon();
+	void EndPreviousWeapon();
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -92,6 +97,16 @@ protected:
 	// Pawn is dead?
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	bool bDied;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	bool bIsChangingWeapon;
+
+	FTimerHandle TimerHandle_WeaponChangeTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	float WeaponChangeTime;
+
+	float LastChangeTime;
 
 public:	
 	// Called every frame

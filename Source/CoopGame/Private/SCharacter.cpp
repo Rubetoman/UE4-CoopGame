@@ -11,6 +11,7 @@
 #include "CoopGame\CoopGame.h"
 #include "../Public/Components/SHealthComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "TimerManager.h"
 //#include "Containers/Map.h"
 
 // Sets default values
@@ -35,7 +36,10 @@ ASCharacter::ASCharacter()
 
 	WeaponAttachSocketName = "WeaponSocket";
 
-	bDied = false;
+	WeaponChangeTime = 1.0f;
+
+	bDied = false; 
+	bIsChangingWeapon = false;
 }
 
 // Called when the game starts or when spawned
@@ -108,7 +112,7 @@ void ASCharacter::EndZoom()
 
 void ASCharacter::StartFire()
 {
-	if (CurrentWeapon.Value != nullptr)
+	if (CurrentWeapon.Value != nullptr && !bIsChangingWeapon)
 		CurrentWeapon.Value->StartFire();
 }
 
@@ -133,6 +137,13 @@ void ASCharacter::ToggleFireType()
 	}
 }
 
+void ASCharacter::StartNextWeapon()
+{
+	bIsChangingWeapon = true;
+	float FirstDelay = FMath::Max(LastChangeTime + WeaponChangeTime - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle_WeaponChangeTime, this, &ASCharacter::PreviousWeapon, WeaponChangeTime, true, FirstDelay);
+}
+
 void ASCharacter::NextWeapon()
 {
 	CurrentWeapon.Value->SetActorHiddenInGame(true);
@@ -144,6 +155,23 @@ void ASCharacter::NextWeapon()
 
 	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
 	CurrentWeapon.Value->SetActorHiddenInGame(false);
+
+	LastChangeTime = GetWorld()->TimeSeconds;
+
+	EndNextWeapon();
+}
+
+void ASCharacter::EndNextWeapon()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_WeaponChangeTime);
+	bIsChangingWeapon = false;
+}
+
+void ASCharacter::StartPreviousWeapon()
+{
+	bIsChangingWeapon = true;
+	float FirstDelay = FMath::Max(LastChangeTime + WeaponChangeTime - GetWorld()->TimeSeconds, 0.0f);
+	GetWorldTimerManager().SetTimer(TimerHandle_WeaponChangeTime, this, &ASCharacter::PreviousWeapon, WeaponChangeTime, true, FirstDelay);
 }
 
 void ASCharacter::PreviousWeapon()
@@ -157,6 +185,16 @@ void ASCharacter::PreviousWeapon()
 
 	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
 	CurrentWeapon.Value->SetActorHiddenInGame(false);
+
+	LastChangeTime = GetWorld()->TimeSeconds;
+
+	EndPreviousWeapon();
+}
+
+void ASCharacter::EndPreviousWeapon()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_WeaponChangeTime);
+	bIsChangingWeapon = false;
 }
 
 void ASCharacter::OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, 
@@ -227,8 +265,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("ToggleFireType", IE_Pressed, this, &ASCharacter::	ToggleFireType);
 
-	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &ASCharacter::NextWeapon);
-	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &ASCharacter::PreviousWeapon);
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &ASCharacter::StartNextWeapon);
+	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &ASCharacter::StartPreviousWeapon);
 
 }
 
