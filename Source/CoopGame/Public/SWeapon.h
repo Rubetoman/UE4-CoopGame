@@ -24,6 +24,8 @@ public:
 	void StartReload();
 	void StopReload();
 
+	void ToggleFireType();
+
 	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 
@@ -46,6 +48,10 @@ protected:
 
 	// Derived from RateOfFire
 	float TimeBetweenShots;
+
+	// Change between fire types: 0 = Automatic, 1 = Semi-Automatic
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	uint8 FireType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp = nullptr;

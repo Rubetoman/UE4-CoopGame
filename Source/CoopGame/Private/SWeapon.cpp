@@ -32,6 +32,7 @@ ASWeapon::ASWeapon()
 	VulnerableDamageMul = 4.0f;
 
 	RateOfFire = 600;
+	FireType = 0;
 
 	MaxAmmo = 30;
 	CurrentAmmo = MaxAmmo;
@@ -49,8 +50,15 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::StartFire()
 {
-	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
-	GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	if (FireType == 0)
+	{
+		float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+	}
+	else
+	{
+		Fire();
+	}	
 }
 
 void ASWeapon::StopFire()
@@ -68,6 +76,14 @@ void ASWeapon::StopReload()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
 	bIsReloading = false;
+}
+
+void ASWeapon::ToggleFireType()
+{
+	if (FireType == 0)
+		++FireType;
+	else
+		--FireType;
 }
 
 void ASWeapon::Fire()

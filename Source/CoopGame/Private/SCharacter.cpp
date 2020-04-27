@@ -95,6 +95,12 @@ void ASCharacter::Reload()
 		CurrentWeapon->StartReload();
 }
 
+void ASCharacter::ToggleFireType()
+{
+	if (CurrentWeapon != nullptr)
+		CurrentWeapon->ToggleFireType();
+}
+
 ASWeapon* ASCharacter::GetCurrentWeapon()
 {
 	return CurrentWeapon;
@@ -143,6 +149,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASCharacter::StopFire);
 
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASCharacter::Reload);
+
+	PlayerInputComponent->BindAction("ToggleFireType", IE_Pressed, this, &ASCharacter::	ToggleFireType);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

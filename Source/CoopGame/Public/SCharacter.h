@@ -38,6 +38,8 @@ protected:
 
 	void Reload();
 
+	void ToggleFireType();
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ASWeapon* GetCurrentWeapon();
 
