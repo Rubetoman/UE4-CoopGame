@@ -10,6 +10,8 @@
 #include "Components/CapsuleComponent.h"
 #include "CoopGame\CoopGame.h"
 #include "../Public/Components/SHealthComponent.h"
+#include "Components/StaticMeshComponent.h"
+//#include "Containers/Map.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -48,11 +50,25 @@ void ASCharacter::BeginPlay()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	CurrentWeapon = GetWorld()->SpawnActor<ASWeapon>(StarterWeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-	if (CurrentWeapon)
+	for (TSubclassOf<ASWeapon> WeaponClass : StarterWeaponClasses)
+	{		
+		ASWeapon* Weapon = GetWorld()->SpawnActor<ASWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		if (Weapon != nullptr)
+		{
+			Weapon->SetOwner(this);
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
+			Weapon->SetActorHiddenInGame(true);
+			PlayerWeapons.Add(Weapon);
+		}
+	}
+
+	// Set current weapon
+	if (PlayerWeapons[0] != nullptr)
 	{
-		CurrentWeapon->SetOwner(this);
-		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
+		CurrentWeapon.Key = 0;
+		CurrentWeapon.Value = PlayerWeapons[0];
+		CurrentWeapon.Value->SetActorHiddenInGame(false);
+
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
@@ -92,29 +108,55 @@ void ASCharacter::EndZoom()
 
 void ASCharacter::StartFire()
 {
-	if (CurrentWeapon != nullptr)
-		CurrentWeapon->StartFire();
+	if (CurrentWeapon.Value != nullptr)
+		CurrentWeapon.Value->StartFire();
 }
 
 void ASCharacter::StopFire()
 {
-	if (CurrentWeapon != nullptr)
-		CurrentWeapon->StopFire();
+	if (CurrentWeapon.Value != nullptr)
+		CurrentWeapon.Value->StopFire();
 }
 
 void ASCharacter::Reload()
 {
-	if (CurrentWeapon != nullptr && !CurrentWeapon->bIsReloading)
-		CurrentWeapon->StartReload();
+	if (CurrentWeapon.Value != nullptr && !CurrentWeapon.Value->bIsReloading)
+		CurrentWeapon.Value->StartReload();
 }
 
 void ASCharacter::ToggleFireType()
 {
-	if (CurrentWeapon != nullptr)
+	if (CurrentWeapon.Value != nullptr)
 	{
-		CurrentWeapon->ToggleFireType();
+		CurrentWeapon.Value->ToggleFireType();
 		OnToggleFireType();	// Blueprint implemented
 	}
+}
+
+void ASCharacter::NextWeapon()
+{
+	CurrentWeapon.Value->SetActorHiddenInGame(true);
+
+	if (CurrentWeapon.Key < PlayerWeapons.Num() - 1)
+		++CurrentWeapon.Key;
+	else
+		CurrentWeapon.Key = 0;
+
+	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
+	CurrentWeapon.Value->SetActorHiddenInGame(false);
+}
+
+void ASCharacter::PreviousWeapon()
+{
+	CurrentWeapon.Value->SetActorHiddenInGame(true);
+
+	if (CurrentWeapon.Key > 0)
+		--CurrentWeapon.Key;
+	else
+		CurrentWeapon.Key = PlayerWeapons.Num() - 1;
+
+	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
+	CurrentWeapon.Value->SetActorHiddenInGame(false);
 }
 
 void ASCharacter::OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, 
@@ -136,13 +178,13 @@ void ASCharacter::OnHealthChanged(USHealthComponent* HealthComponent, float Heal
 
 ASWeapon* ASCharacter::GetCurrentWeapon()
 {
-	return CurrentWeapon;
+	return CurrentWeapon.Value;
 }
 
 bool ASCharacter::GetIsReloading()
 {
-	if (CurrentWeapon != nullptr)
-		return CurrentWeapon->bIsReloading;
+	if (CurrentWeapon.Value != nullptr)
+		return CurrentWeapon.Value->bIsReloading;
 
 	return false;
 }
@@ -184,6 +226,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ASCharacter::Reload);
 
 	PlayerInputComponent->BindAction("ToggleFireType", IE_Pressed, this, &ASCharacter::	ToggleFireType);
+
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &ASCharacter::NextWeapon);
+	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &ASCharacter::PreviousWeapon);
+
 }
 
 FVector ASCharacter::GetPawnViewLocation() const

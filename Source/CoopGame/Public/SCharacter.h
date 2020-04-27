@@ -44,6 +44,9 @@ protected:
 
 	void ToggleFireType();
 
+	void NextWeapon();
+	void PreviousWeapon();
+
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
@@ -75,10 +78,13 @@ protected:
 	// Default FOV set during begin play
 	float DefaultFOV;
 
-	ASWeapon* CurrentWeapon;
+	TPair<uint8, ASWeapon*> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
-	TSubclassOf<ASWeapon> StarterWeaponClass;
+	TArray<TSubclassOf<ASWeapon>> StarterWeaponClasses;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
+	TArray<ASWeapon*> PlayerWeapons;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
 	FName WeaponAttachSocketName;
