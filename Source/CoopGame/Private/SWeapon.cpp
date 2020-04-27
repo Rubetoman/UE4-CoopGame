@@ -31,13 +31,6 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	VulnerableDamageMul = 4.0f;
 
-	RateOfFire = 600;
-	FireType = 0;
-
-	MaxAmmo = 30;
-	CurrentAmmo = MaxAmmo;
-
-	ReloadTime = 2.0f;
 	bIsReloading = false;
 }
 
@@ -45,17 +38,26 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	RateOfFire = 600;
 	TimeBetweenShots = 60 / RateOfFire;
+
+	MaxFireTypes = 1;
+	FireType = 0;
+
+	MaxAmmo = 30;
+	CurrentAmmo = MaxAmmo;
+
+	ReloadTime = 2.0f;
 }
 
 void ASWeapon::StartFire()
 {
+	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 	if (FireType == 0)
 	{
-		float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
 		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
 	}
-	else
+	else if (FirstDelay <= 0.0f)
 	{
 		Fire();
 	}	
@@ -80,10 +82,10 @@ void ASWeapon::StopReload()
 
 void ASWeapon::ToggleFireType()
 {
-	if (FireType == 0)
-		++FireType;
+	if (FireType == MaxFireTypes)
+		FireType = 0;
 	else
-		--FireType;
+		++FireType;
 }
 
 FText ASWeapon::GetCurrentFireTypeName()

@@ -6,8 +6,6 @@
 #include "SWeapon.h"
 #include "SGrenadeLauncher.generated.h"
 
-class ASGrenade;
-
 /**
  * 
  */
@@ -15,11 +13,21 @@ UCLASS()
 class COOPGAME_API ASGrenadeLauncher : public ASWeapon
 {
 	GENERATED_BODY()
+
+public:
+	ASGrenadeLauncher();
+
+	virtual void BeginPlay() override;
+
+	virtual void StartFire() override;
+	void ToggleFireType() override;
+
+	FText GetCurrentFireTypeName() override;
 	
 protected:
 	virtual void Fire() override;
 
-	/** Projectile class to spawn */
+	/* Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Weapon")
-	TSubclassOf<AActor> ProjectileClass;
+	TArray<TSubclassOf<AActor>> ProjectileClasses;
 };

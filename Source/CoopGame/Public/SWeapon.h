@@ -18,16 +18,16 @@ public:
 	// Sets default values for this actor's properties
 	ASWeapon();
 
-	void StartFire();
+	virtual void StartFire();
 	void StopFire();
 
 	void StartReload();
 	void StopReload();
 
-	void ToggleFireType();
+	virtual void ToggleFireType();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	FText GetCurrentFireTypeName();
+	virtual FText GetCurrentFireTypeName();
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
@@ -52,9 +52,12 @@ protected:
 	// Derived from RateOfFire
 	float TimeBetweenShots;
 
-	// Change between fire types: 0 = Automatic, 1 = Semi-Automatic
+	// Change between fire types. Default: 0 = Automatic, 1 = Semi-Automatic
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	uint8 FireType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	uint8 MaxFireTypes;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USkeletalMeshComponent* MeshComp = nullptr;
