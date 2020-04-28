@@ -52,6 +52,9 @@ protected:
 	void PreviousWeapon();
 	void EndPreviousWeapon();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Player")
+	void OnWeaponChange();
+
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 

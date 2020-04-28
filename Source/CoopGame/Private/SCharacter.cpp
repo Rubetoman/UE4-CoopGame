@@ -158,6 +158,7 @@ void ASCharacter::NextWeapon()
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
+	OnWeaponChange();
 	EndNextWeapon();
 }
 
@@ -188,6 +189,7 @@ void ASCharacter::PreviousWeapon()
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
+	OnWeaponChange();
 	EndPreviousWeapon();
 }
 
