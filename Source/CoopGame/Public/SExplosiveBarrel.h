@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Barrel")
 	UMaterial* ExplodedMaterial = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Barrel")
+	UParticleSystem* ExplosionEffect = nullptr;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Barrel")
 	bool bExploded;
 };

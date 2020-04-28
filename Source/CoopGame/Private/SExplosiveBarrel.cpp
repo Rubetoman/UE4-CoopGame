@@ -4,6 +4,7 @@
 #include "../Public/Components/SHealthComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Materials/Material.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -32,8 +33,12 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* HealthComponent, floa
 		// Explode
 		bExploded = true;
 
+		// Change material
 		MeshComp->SetMaterial(0, ExplodedMaterial);
 
-		SetLifeSpan(10.0f);
+		// Spawn explosion effect
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetTransform());
+
+		//SetLifeSpan(10.0f);
 	}
 }
