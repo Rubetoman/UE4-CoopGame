@@ -46,11 +46,15 @@ protected:
 
 	void StartNextWeapon();
 	void NextWeapon();
-	void EndNextWeapon();
 
 	void StartPreviousWeapon();
 	void PreviousWeapon();
-	void EndPreviousWeapon();
+	
+	UFUNCTION()
+	void StartEquipWeapon(uint8 WeaponIndex);
+	void EquipWeapon(uint8 WeaponIndex);
+
+	void EndEquipWeapon();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Player")
 	void OnWeaponChange();

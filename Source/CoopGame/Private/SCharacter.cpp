@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "CoopGame\CoopGame.h"
 #include "../Public/Components/SHealthComponent.h"
+#include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
 //#include "Containers/Map.h"
@@ -158,14 +159,7 @@ void ASCharacter::NextWeapon()
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
-	OnWeaponChange();
-	EndNextWeapon();
-}
-
-void ASCharacter::EndNextWeapon()
-{
-	GetWorldTimerManager().ClearTimer(TimerHandle_WeaponChangeTime);
-	bIsChangingWeapon = false;
+	EndEquipWeapon();
 }
 
 void ASCharacter::StartPreviousWeapon()
@@ -189,12 +183,37 @@ void ASCharacter::PreviousWeapon()
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
-	OnWeaponChange();
-	EndPreviousWeapon();
+	EndEquipWeapon();
 }
 
-void ASCharacter::EndPreviousWeapon()
+void ASCharacter::StartEquipWeapon(uint8 WeaponIndex)
 {
+	bIsChangingWeapon = true;
+	float FirstDelay = FMath::Max(LastChangeTime + WeaponChangeTime - GetWorld()->TimeSeconds, 0.0f);
+	FTimerDelegate EquipWeaponDelegate = FTimerDelegate::CreateUObject(this, &ASCharacter::EquipWeapon, WeaponIndex);
+	GetWorldTimerManager().SetTimer(TimerHandle_WeaponChangeTime, EquipWeaponDelegate, WeaponChangeTime, true, FirstDelay);
+}
+
+void ASCharacter::EquipWeapon(uint8 WeaponIndex)
+{
+	if (WeaponIndex < PlayerWeapons.Num())
+	{
+		ASWeapon* NewWeapon = PlayerWeapons[WeaponIndex];
+		if (NewWeapon != nullptr && NewWeapon != CurrentWeapon.Value)
+		{
+			CurrentWeapon.Value->SetActorHiddenInGame(true);
+			CurrentWeapon.Key = WeaponIndex;
+			CurrentWeapon.Value = NewWeapon;
+			LastChangeTime = GetWorld()->TimeSeconds;
+			CurrentWeapon.Value->SetActorHiddenInGame(false);
+		}
+	}
+	EndEquipWeapon();
+}
+
+void ASCharacter::EndEquipWeapon()
+{
+	OnWeaponChange();
 	GetWorldTimerManager().ClearTimer(TimerHandle_WeaponChangeTime);
 	bIsChangingWeapon = false;
 }
@@ -270,6 +289,21 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &ASCharacter::StartNextWeapon);
 	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &ASCharacter::StartPreviousWeapon);
 
+	/* Weapon 1 to 9*/
+	for(int i = 1; i < LAST_WEAPON_KEY; ++i)
+	{
+		// Create delegate to bind and set the function
+		FInputActionHandlerSignature ActionHandler;
+		ActionHandler.BindUFunction(this, TEXT("StartEquipWeapon"), i - 1);
+
+		// Set the input binding
+		FString InputName("Weapon");
+		InputName += FString::FromInt(i);
+		//FName InputName = InputNameStr;
+		FInputActionBinding* ActionBinding = new FInputActionBinding(FName(*InputName), IE_Pressed);
+		ActionBinding->ActionDelegate = ActionHandler;
+		PlayerInputComponent->AddActionBinding(*ActionBinding);
+	}
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
