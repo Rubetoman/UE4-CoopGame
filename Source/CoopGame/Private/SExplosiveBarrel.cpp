@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Materials/Material.h"
 #include "Kismet/GameplayStatics.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -12,17 +13,21 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	bExploded = false;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetSimulatePhysics(true);
+	MeshComp->SetCollisionObjectType(ECC_PhysicsBody);
 	RootComponent = MeshComp;
 
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
-}
-
-// Called when the game starts or when spawned
-void ASExplosiveBarrel::BeginPlay()
-{
-	Super::BeginPlay();
-	
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASExplosiveBarrel::OnHealthChanged);
+
+	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
+	RadialForceComp->SetupAttachment(MeshComp);
+	RadialForceComp->Radius = 250;
+	RadialForceComp->bImpulseVelChange = true;
+	RadialForceComp->bAutoActivate = false;
+	RadialForceComp->bIgnoreOwningActor = true;
+
+	JumpImpulse = 500;
 }
 
 void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType,
@@ -37,8 +42,12 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* HealthComponent, floa
 		MeshComp->SetMaterial(0, ExplodedMaterial);
 
 		// Spawn explosion effect
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetTransform());
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 
-		//SetLifeSpan(10.0f);
+		// Add force to barrel
+		MeshComp->AddImpulse(FVector::UpVector * JumpImpulse, NAME_None, true);
+
+		// Add radial force
+		RadialForceComp->FireImpulse();
 	}
 }

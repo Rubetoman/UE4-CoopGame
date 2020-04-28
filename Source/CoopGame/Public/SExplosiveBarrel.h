@@ -8,6 +8,7 @@
 
 class USHealthComponent;
 class UMaterial;
+class URadialForceComponent;
 
 UCLASS()
 class COOPGAME_API ASExplosiveBarrel : public AActor
@@ -19,8 +20,6 @@ public:
 	ASExplosiveBarrel();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
@@ -31,12 +30,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Barrel")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	URadialForceComponent* RadialForceComp = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "FX")
 	UMaterial* ExplodedMaterial = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Barrel")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
 	UParticleSystem* ExplosionEffect = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Barrel")
+	UPROPERTY(BlueprintReadOnly, Category = "FX")
 	bool bExploded;
+
+	UPROPERTY(EditAnywhere, Category = "FX", meta = (ClampMin = 0.1f, ClampMax = 10000.0f))
+	float JumpImpulse;
 };
