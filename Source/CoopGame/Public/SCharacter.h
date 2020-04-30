@@ -11,6 +11,19 @@ class USpringArmComponent;
 class ASWeapon;
 class USHealthComponent;
 
+USTRUCT()
+struct FWeaponStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	uint8 Index;		// Index of the weapon on player weapons list
+
+	UPROPERTY()
+	ASWeapon* Weapon = nullptr;	// Pointer to the weapon
+
+};
+
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
 {
@@ -90,7 +103,8 @@ protected:
 	// Default FOV set during begin play
 	float DefaultFOV;
 
-	TPair<uint8, ASWeapon*> CurrentWeapon;
+	UPROPERTY(Replicated)
+	FWeaponStruct CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	TArray<TSubclassOf<ASWeapon>> StarterWeaponClasses;

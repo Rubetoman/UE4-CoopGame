@@ -32,6 +32,8 @@ ASWeapon::ASWeapon()
 	VulnerableDamageMul = 4.0f;
 
 	bIsReloading = false;
+
+	SetReplicates(true);
 }
 
 void ASWeapon::BeginPlay()

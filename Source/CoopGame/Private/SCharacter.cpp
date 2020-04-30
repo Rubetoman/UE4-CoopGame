@@ -13,6 +13,7 @@
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
+#include "Net\UnrealNetwork.h"
 //#include "Containers/Map.h"
 
 // Sets default values
@@ -51,32 +52,34 @@ void ASCharacter::BeginPlay()
 	DefaultFOV = CameraComp->FieldOfView;
 	TargetFOV = DefaultFOV;
 
-	// Spawn a default weapon
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 
-	for (TSubclassOf<ASWeapon> WeaponClass : StarterWeaponClasses)
-	{		
-		ASWeapon* Weapon = GetWorld()->SpawnActor<ASWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
-		if (Weapon != nullptr)
+	if (Role == ROLE_Authority)
+	{
+		// Spawn a default weapon
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		for (TSubclassOf<ASWeapon> WeaponClass : StarterWeaponClasses)
 		{
-			Weapon->SetOwner(this);
-			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
-			Weapon->SetActorHiddenInGame(true);
-			PlayerWeapons.Add(Weapon);
+			ASWeapon* Weapon = GetWorld()->SpawnActor<ASWeapon>(WeaponClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+			if (Weapon != nullptr)
+			{
+				Weapon->SetOwner(this);
+				Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponAttachSocketName);
+				Weapon->SetActorHiddenInGame(true);
+				PlayerWeapons.Add(Weapon);
+			}
+		}
+
+		// Set current weapon
+		if (PlayerWeapons[0] != nullptr)
+		{
+			CurrentWeapon.Index = 0;
+			CurrentWeapon.Weapon = PlayerWeapons[0];
+			CurrentWeapon.Weapon->SetActorHiddenInGame(false);
 		}
 	}
-
-	// Set current weapon
-	if (PlayerWeapons[0] != nullptr)
-	{
-		CurrentWeapon.Key = 0;
-		CurrentWeapon.Value = PlayerWeapons[0];
-		CurrentWeapon.Value->SetActorHiddenInGame(false);
-
-	}
-
-	HealthComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 
 	OnCharacterStart();
 }
@@ -113,27 +116,27 @@ void ASCharacter::EndZoom()
 
 void ASCharacter::StartFire()
 {
-	if (CurrentWeapon.Value != nullptr && !bIsChangingWeapon)
-		CurrentWeapon.Value->StartFire();
+	if (CurrentWeapon.Weapon != nullptr && !bIsChangingWeapon)
+		CurrentWeapon.Weapon->StartFire();
 }
 
 void ASCharacter::StopFire()
 {
-	if (CurrentWeapon.Value != nullptr)
-		CurrentWeapon.Value->StopFire();
+	if (CurrentWeapon.Weapon != nullptr)
+		CurrentWeapon.Weapon->StopFire();
 }
 
 void ASCharacter::Reload()
 {
-	if (CurrentWeapon.Value != nullptr && !CurrentWeapon.Value->bIsReloading)
-		CurrentWeapon.Value->StartReload();
+	if (CurrentWeapon.Weapon != nullptr && !CurrentWeapon.Weapon->bIsReloading)
+		CurrentWeapon.Weapon->StartReload();
 }
 
 void ASCharacter::ToggleFireType()
 {
-	if (CurrentWeapon.Value != nullptr)
+	if (CurrentWeapon.Weapon != nullptr)
 	{
-		CurrentWeapon.Value->ToggleFireType();
+		CurrentWeapon.Weapon->ToggleFireType();
 		OnToggleFireType();	// Blueprint implemented
 	}
 }
@@ -147,15 +150,15 @@ void ASCharacter::StartNextWeapon()
 
 void ASCharacter::NextWeapon()
 {
-	CurrentWeapon.Value->SetActorHiddenInGame(true);
+	CurrentWeapon.Weapon->SetActorHiddenInGame(true);
 
-	if (CurrentWeapon.Key < PlayerWeapons.Num() - 1)
-		++CurrentWeapon.Key;
+	if (CurrentWeapon.Index < PlayerWeapons.Num() - 1)
+		++CurrentWeapon.Index;
 	else
-		CurrentWeapon.Key = 0;
+		CurrentWeapon.Index = 0;
 
-	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
-	CurrentWeapon.Value->SetActorHiddenInGame(false);
+	CurrentWeapon.Weapon = PlayerWeapons[CurrentWeapon.Index];
+	CurrentWeapon.Weapon->SetActorHiddenInGame(false);
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
@@ -171,15 +174,15 @@ void ASCharacter::StartPreviousWeapon()
 
 void ASCharacter::PreviousWeapon()
 {
-	CurrentWeapon.Value->SetActorHiddenInGame(true);
+	CurrentWeapon.Weapon->SetActorHiddenInGame(true);
 
-	if (CurrentWeapon.Key > 0)
-		--CurrentWeapon.Key;
+	if (CurrentWeapon.Index > 0)
+		--CurrentWeapon.Index;
 	else
-		CurrentWeapon.Key = PlayerWeapons.Num() - 1;
+		CurrentWeapon.Index = PlayerWeapons.Num() - 1;
 
-	CurrentWeapon.Value = PlayerWeapons[CurrentWeapon.Key];
-	CurrentWeapon.Value->SetActorHiddenInGame(false);
+	CurrentWeapon.Weapon = PlayerWeapons[CurrentWeapon.Index];
+	CurrentWeapon.Weapon->SetActorHiddenInGame(false);
 
 	LastChangeTime = GetWorld()->TimeSeconds;
 
@@ -199,13 +202,13 @@ void ASCharacter::EquipWeapon(uint8 WeaponIndex)
 	if (WeaponIndex < PlayerWeapons.Num())
 	{
 		ASWeapon* NewWeapon = PlayerWeapons[WeaponIndex];
-		if (NewWeapon != nullptr && NewWeapon != CurrentWeapon.Value)
+		if (NewWeapon != nullptr && NewWeapon != CurrentWeapon.Weapon)
 		{
-			CurrentWeapon.Value->SetActorHiddenInGame(true);
-			CurrentWeapon.Key = WeaponIndex;
-			CurrentWeapon.Value = NewWeapon;
+			CurrentWeapon.Weapon->SetActorHiddenInGame(true);
+			CurrentWeapon.Index = WeaponIndex;
+			CurrentWeapon.Weapon = NewWeapon;
 			LastChangeTime = GetWorld()->TimeSeconds;
-			CurrentWeapon.Value->SetActorHiddenInGame(false);
+			CurrentWeapon.Weapon->SetActorHiddenInGame(false);
 		}
 	}
 	EndEquipWeapon();
@@ -237,13 +240,13 @@ void ASCharacter::OnHealthChanged(USHealthComponent* HealthComponent, float Heal
 
 ASWeapon* ASCharacter::GetCurrentWeapon()
 {
-	return CurrentWeapon.Value;
+	return CurrentWeapon.Weapon;
 }
 
 bool ASCharacter::GetIsReloading()
 {
-	if (CurrentWeapon.Value != nullptr)
-		return CurrentWeapon.Value->bIsReloading;
+	if (CurrentWeapon.Weapon != nullptr)
+		return CurrentWeapon.Weapon->bIsReloading;
 
 	return false;
 }
@@ -314,3 +317,9 @@ FVector ASCharacter::GetPawnViewLocation() const
 	return Super::GetPawnViewLocation();
 }
 
+void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+}
