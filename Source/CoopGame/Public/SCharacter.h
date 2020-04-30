@@ -109,7 +109,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	TArray<TSubclassOf<ASWeapon>> StarterWeaponClasses;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
+	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = "Player")
 	TArray<ASWeapon*> PlayerWeapons;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
