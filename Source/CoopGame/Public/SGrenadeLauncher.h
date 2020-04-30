@@ -25,6 +25,7 @@ public:
 	FText GetCurrentFireTypeName() override;
 	
 protected:
+
 	virtual void Fire() override;
 
 	/* Projectile class to spawn */

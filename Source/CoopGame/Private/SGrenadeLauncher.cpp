@@ -38,6 +38,12 @@ void ASGrenadeLauncher::Fire()
 {
 	if (CurrentAmmo <= 0) return;
 
+	// Networking
+	if (Role < ROLE_Authority)
+	{
+		ServerFire();
+	}
+
 	// Stop reload
 	if (bIsReloading)
 		StopReload();
