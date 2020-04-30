@@ -90,6 +90,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USHealthComponent* HealthComp = nullptr;
 
 	float TargetFOV;
@@ -116,7 +117,7 @@ protected:
 	FName WeaponAttachSocketName;
 
 	// Pawn is dead?
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
