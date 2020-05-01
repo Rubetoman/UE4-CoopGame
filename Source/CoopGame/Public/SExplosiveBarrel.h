@@ -21,8 +21,13 @@ public:
 
 protected:
 
+	void ExplodeEffects();
+
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* HealthComponent, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION()
+	void OnRep_Exploded();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp = nullptr;
@@ -39,7 +44,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
 	UParticleSystem* ExplosionEffect = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Category = "FX")
+	UPROPERTY(ReplicatedUsing=OnRep_Exploded, BlueprintReadOnly, Category = "FX")
 	bool bExploded;
 
 	UPROPERTY(EditAnywhere, Category = "FX", meta = (ClampMin = 0.1f, ClampMax = 10000.0f))
