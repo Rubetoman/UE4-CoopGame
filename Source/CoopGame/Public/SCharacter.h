@@ -120,7 +120,7 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Weapon")
 	bool bIsChangingWeapon;
 
 	FTimerHandle TimerHandle_WeaponChangeTime;

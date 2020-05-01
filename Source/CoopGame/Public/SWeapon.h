@@ -43,7 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual FText GetCurrentFireTypeName();
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
+	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 
 protected:
@@ -117,7 +117,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	uint8 MaxAmmo;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(Replicated, VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	uint8 CurrentAmmo;
 
 	FTimerHandle TimerHandle_ReloadTime;
