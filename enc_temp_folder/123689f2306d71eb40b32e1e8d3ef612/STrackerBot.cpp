@@ -90,9 +90,6 @@ void ASTrackerBot::SelfDestruct()
 
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 
-	MeshComp->SetVisibility(false, true);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	if (Role == ROLE_Authority)
 	{
 		TArray<AActor*> IgnoredActors;
@@ -103,7 +100,7 @@ void ASTrackerBot::SelfDestruct()
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
 		// Destroy Actor Immediately
-		SetLifeSpan(2.0f);
+		Destroy();
 	}
 }
 
