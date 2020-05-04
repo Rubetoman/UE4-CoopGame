@@ -24,6 +24,8 @@ protected:
 
 	FVector GetNextPathPoint();
 
+	void SelfDestruct();
+
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
@@ -47,6 +49,17 @@ protected:
 
 	// Dynamic material to pulse on damage
 	UMaterialInstanceDynamic* MatInst = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	UParticleSystem* ExplosionEffect = nullptr;
+
+	bool bExploded;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionDamage;
 
 public:	
 	// Called every frame
