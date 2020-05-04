@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components\SphereComponent.h"
 #include "SCharacter.h"
+#include "Sound\SoundCue.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -44,6 +45,8 @@ ASTrackerBot::ASTrackerBot()
 
 	bStartedSelfDestruction = false;
 	bExploded = false;
+
+	SelfDamageInterval = 0.25;
 }
 
 // Called when the game starts or when spawned
@@ -89,6 +92,8 @@ void ASTrackerBot::SelfDestruct()
 	
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 	
+	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
+
 	// Destroy Actor Immediately
 	Destroy();
 }
@@ -155,7 +160,9 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 	if (PlayerPawn)
 	{
 		// Start self destruction sequence
-		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+		GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
 		bStartedSelfDestruction = true;
+
+		UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 	}
 }
