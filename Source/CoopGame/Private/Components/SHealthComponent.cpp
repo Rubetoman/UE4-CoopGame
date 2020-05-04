@@ -9,7 +9,7 @@ USHealthComponent::USHealthComponent()
 {
 	DefaultHealth = 100;
 
-	SetIsReplicated(true);
+	//SetIsReplicated(true);
 }
 
 
