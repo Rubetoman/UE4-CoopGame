@@ -7,6 +7,7 @@
 #include "STrackerBot.generated.h"
 
 class USHealthComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float RequiredDistanceToTarget;
+
+	// Dynamic material to pulse on damage
+	UMaterialInstanceDynamic* MatInst = nullptr;
 
 public:	
 	// Called every frame
