@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Net\UnrealNetwork.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -21,9 +22,12 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASExplosiveBarrel::OnHealthChanged);
 
+	ExplosionRadius = 200;
+	ExplosionDamage = 40;
+
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
 	RadialForceComp->SetupAttachment(MeshComp);
-	RadialForceComp->Radius = 250;
+	RadialForceComp->Radius = ExplosionRadius;
 	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->bAutoActivate = false;
 	RadialForceComp->bIgnoreOwningActor = true;
@@ -58,6 +62,21 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 
 		// Add radial force
 		RadialForceComp->FireImpulse();
+
+		// Add damage
+		if (Role == ROLE_Authority)
+		{
+			TArray<AActor*> IgnoredActors;
+			IgnoredActors.Add(this);
+
+			// Damage near actors
+			UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+
+			DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+
+			// Destroy Actor Immediately
+			SetLifeSpan(2.0f);
+		}
 	}
 }
 

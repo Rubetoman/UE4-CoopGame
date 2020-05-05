@@ -49,4 +49,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "FX", meta = (ClampMin = 0.1f, ClampMax = 10000.0f))
 	float JumpImpulse;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float ExplosionRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	float ExplosionDamage;
 };
