@@ -30,8 +30,13 @@ protected:
 
 	void DamageSelf();
 
+	void OnCheckNearbyBots();
+
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION()
+	void OnRep_PowerLevel();
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	UStaticMeshComponent* MeshComp = nullptr;
@@ -80,6 +85,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	USoundCue* ExplodeSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float DistanceToCheckNearbyBots;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	int32 MaxPowerLevel;
+
+	UPROPERTY(ReplicatedUsing=OnRep_PowerLevel, EditDefaultsOnly, Category = "TrackerBot")
+	int32 PowerLevel;
 
 public:	
 	// Called every frame

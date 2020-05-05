@@ -13,6 +13,7 @@
 #include "Components\SphereComponent.h"
 #include "SCharacter.h"
 #include "Sound\SoundCue.h"
+#include "Net\UnrealNetwork.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -47,6 +48,12 @@ ASTrackerBot::ASTrackerBot()
 	bExploded = false;
 
 	SelfDamageInterval = 0.25;
+
+	DistanceToCheckNearbyBots = 600;
+	MaxPowerLevel = 5;
+	PowerLevel = 0;
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -54,10 +61,19 @@ void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Role == ROLE_Authority)
+	if (MatInst == nullptr)
+	{
+		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+
+	if (GetLocalRole() == ROLE_Authority)
 	{
 		// Find initial point to move-to
 		NextPathPoint = GetNextPathPoint();
+
+		// Check nearby TrackerBots every second
+		FTimerHandle TimerHandle_CheckPowerLevel;
+		GetWorldTimerManager().SetTimer(TimerHandle_CheckPowerLevel, this, &ASTrackerBot::OnCheckNearbyBots, 1.0f, true);
 	}
 }
 
@@ -98,7 +114,9 @@ void ASTrackerBot::SelfDestruct()
 		TArray<AActor*> IgnoredActors;
 		IgnoredActors.Add(this);
 
-		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+		// Damage near actors
+		float ActualDamage = ExplosionDamage + ExplosionDamage * PowerLevel;
+		UGameplayStatics::ApplyRadialDamage(this, ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 
@@ -110,6 +128,43 @@ void ASTrackerBot::SelfDestruct()
 void ASTrackerBot::DamageSelf()
 {
 	UGameplayStatics::ApplyDamage(this, 20, GetInstigatorController(), this, nullptr);
+}
+
+void ASTrackerBot::OnCheckNearbyBots()
+{
+	// Create collider
+	FCollisionShape CollShape;
+	CollShape.SetSphere(DistanceToCheckNearbyBots);
+
+	FCollisionObjectQueryParams QueryParams;
+	QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	QueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
+
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DistanceToCheckNearbyBots, 12, FColor::White, false, 1.0f);
+
+	// Calculate Power Level based on number of nearby bots
+	int32 NumOfBots = 0;
+	for (FOverlapResult Result : Overlaps)
+	{
+		// Look for TrackerBots
+		ASTrackerBot* OtherTrackerBot = Cast<ASTrackerBot>(Result.GetActor());
+		if (OtherTrackerBot != nullptr && OtherTrackerBot != this)
+		{
+			++NumOfBots;	
+		}
+	}
+
+	PowerLevel = FMath::Clamp(NumOfBots, 0, MaxPowerLevel);
+
+	// Update material "PowerLevelAlpha" variable
+	if (MatInst != nullptr)
+	{
+		float NewAlpha = PowerLevel / (float)MaxPowerLevel;
+		MatInst->SetScalarParameterValue("PowerLevelAlpha", NewAlpha);
+	}
 }
 
 // Called every frame
@@ -148,12 +203,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType,
 	class AController* InstigatedBy, AActor* DamageCauser)
 {
-	// Pulse the material on hit
-	if (MatInst == nullptr)
-	{
-		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
-	}
-	
+	// Pulse the material on hit	
 	if (MatInst != nullptr)
 		MatInst->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
 
@@ -168,8 +218,8 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	if (!bStartedSelfDestruction && !bExploded)
 	{
+		// Look for players
 		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
-
 		if (PlayerPawn != nullptr)
 		{
 			if (Role == ROLE_Authority)
@@ -182,4 +232,21 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}
+}
+
+void ASTrackerBot::OnRep_PowerLevel()
+{
+	// Update material "PowerLevelAlpha" variable
+	if (MatInst != nullptr)
+	{
+		float NewAlpha = PowerLevel / (float)MaxPowerLevel;
+		MatInst->SetScalarParameterValue("PowerLevelAlpha", NewAlpha);
+	}
+}
+
+void ASTrackerBot::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(ASTrackerBot, PowerLevel, COND_SkipOwner);
 }
