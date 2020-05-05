@@ -10,6 +10,7 @@ class USHealthComponent;
 class UMaterialInstanceDynamic;
 class USphereComponent;
 class USoundCue;
+class URadialForceComponent;
 
 UCLASS()
 class COOPGAME_API ASTrackerBot : public APawn
@@ -46,6 +47,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	USphereComponent* SphereComp = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	URadialForceComponent* RadialForceComp = nullptr;
 
 	// Next point in navigation path
 	FVector NextPathPoint;

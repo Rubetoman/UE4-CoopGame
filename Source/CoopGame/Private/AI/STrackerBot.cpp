@@ -11,6 +11,7 @@
 #include "Components\SHealthComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components\SphereComponent.h"
+#include "PhysicsEngine/RadialForceComponent.h"
 #include "SCharacter.h"
 #include "Sound\SoundCue.h"
 #include "Net\UnrealNetwork.h"
@@ -36,13 +37,20 @@ ASTrackerBot::ASTrackerBot()
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SphereComp->SetupAttachment(RootComponent);
 
+	ExplosionRadius = 200;
+	ExplosionDamage = 40;
+
+	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComp"));
+	RadialForceComp->SetupAttachment(MeshComp);
+	RadialForceComp->Radius = ExplosionRadius;
+	RadialForceComp->bImpulseVelChange = true;
+	RadialForceComp->bAutoActivate = false;
+	RadialForceComp->bIgnoreOwningActor = true;
+
 	bUseVelocityChange = false;
 	MovementForce = 1000.0f;
 
 	RequiredDistanceToTarget = 100;
-
-	ExplosionRadius = 200;
-	ExplosionDamage = 40;
 
 	bStartedSelfDestruction = false;
 	bExploded = false;
@@ -105,6 +113,9 @@ void ASTrackerBot::SelfDestruct()
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
+
+	// Add radial force
+	RadialForceComp->FireImpulse();
 
 	MeshComp->SetVisibility(false, true);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
