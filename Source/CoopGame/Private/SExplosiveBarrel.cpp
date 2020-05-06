@@ -64,7 +64,7 @@ void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, flo
 		RadialForceComp->FireImpulse();
 
 		// Add damage
-		if (Role == ROLE_Authority)
+		if (GetLocalRole() == ROLE_Authority)
 		{
 			TArray<AActor*> IgnoredActors;
 			IgnoredActors.Add(this);
