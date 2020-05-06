@@ -69,13 +69,13 @@ protected:
 
 	void EndEquipWeapon();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Player")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void OnWeaponChange();
 
 	UFUNCTION()
 	void OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void OnToggleFireType();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
@@ -131,6 +131,12 @@ protected:
 	float LastChangeTime;
 
 public:	
+	UFUNCTION(BlueprintCallable, Category = "Event")
+	void ChangeMaxWalkSpeed(float NewSpeed);
+
+	UFUNCTION(Client, Reliable, WithValidation, BlueprintCallable, Category = "Event")
+	void ClientChangeMaxWalkSpeed(float NewSpeed);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

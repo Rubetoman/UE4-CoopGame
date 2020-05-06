@@ -14,7 +14,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "TimerManager.h"
 #include "Net\UnrealNetwork.h"
-//#include "Containers/Map.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -249,6 +249,21 @@ bool ASCharacter::GetIsReloading()
 		return CurrentWeapon.Weapon->bIsReloading;
 
 	return false;
+}
+
+void ASCharacter::ChangeMaxWalkSpeed(float NewSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+}
+
+void ASCharacter::ClientChangeMaxWalkSpeed_Implementation(float NewSpeed)
+{
+	ChangeMaxWalkSpeed(NewSpeed);
+}
+
+bool ASCharacter::ClientChangeMaxWalkSpeed_Validate(float NewSpeed)
+{
+	return true;
 }
 
 // Called every frame
