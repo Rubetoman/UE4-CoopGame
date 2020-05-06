@@ -227,6 +227,8 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwningHealthComp, float H
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
+	Super::NotifyActorBeginOverlap(OtherActor);
+
 	if (!bStartedSelfDestruction && !bExploded)
 	{
 		// Look for players
