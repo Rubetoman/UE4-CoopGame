@@ -39,9 +39,9 @@ void ASPowerupActor::OnRep_PowerupActive()
 	OnPowerupStateChanged(bIsPowerupActive);
 }
 
-void ASPowerupActor::ActivatePowerup()
+void ASPowerupActor::ActivatePowerup(AActor* OtherActor)
 {
-	OnActivated();
+	OnActivated(OtherActor);
 
 	bIsPowerupActive = true;
 	OnRep_PowerupActive();
