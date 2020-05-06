@@ -30,5 +30,5 @@ void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 
-	// @TODO: Grabt powerup to player if available
+	// @TODO: Grab powerup to player if available
 }
