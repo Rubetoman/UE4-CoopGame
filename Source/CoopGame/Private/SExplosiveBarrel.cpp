@@ -8,6 +8,7 @@
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "Net\UnrealNetwork.h"
 #include "DrawDebugHelpers.h"
+#include "Sound\SoundCue.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -45,6 +46,9 @@ void ASExplosiveBarrel::ExplodeEffects()
 
 	// Spawn explosion effect
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+
+	// Play explosion sound
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 }
 
 void ASExplosiveBarrel::OnHealthChanged(USHealthComponent* OwningHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType,

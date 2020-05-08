@@ -9,6 +9,7 @@
 class USHealthComponent;
 class UMaterial;
 class URadialForceComponent;
+class USoundCue;
 
 UCLASS()
 class COOPGAME_API ASExplosiveBarrel : public AActor
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
 	UParticleSystem* ExplosionEffect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	USoundCue* ExplosionSound = nullptr;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Exploded, BlueprintReadOnly, Category = "FX")
 	bool bExploded;

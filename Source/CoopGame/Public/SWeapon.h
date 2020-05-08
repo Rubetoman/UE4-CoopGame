@@ -8,6 +8,7 @@
 
 class USkeletalMeshComponent;
 class UDamageType;
+class USoundCue;
 
 // Contains information of a single hitscan weapon linetrace
 USTRUCT()
@@ -46,7 +47,7 @@ public:
 	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Powerup")
 	bool bExplosiveBullets;
 
 protected:
@@ -110,6 +111,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Powerup")
 	UParticleSystem* ExplosionEffect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	USoundCue* ExplosionSound = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;

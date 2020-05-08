@@ -12,6 +12,7 @@
 #include "CoopGame\CoopGame.h"
 #include "TimerManager.h"
 #include "Net\UnrealNetwork.h"
+#include "Sound\SoundCue.h"
 
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing(
@@ -252,8 +253,11 @@ void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoi
 		ShotDirection.Normalize();
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, ImpactPoint, ShotDirection.Rotation());
 
-		if(bExplosiveBullets && ExplosionEffect != nullptr)
+		if (bExplosiveBullets && ExplosionEffect != nullptr)
+		{
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ImpactPoint, ShotDirection.Rotation());
+			UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
+		}
 	}
 
 }
@@ -273,4 +277,5 @@ void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
 	DOREPLIFETIME(ASWeapon, CurrentAmmo);
 	DOREPLIFETIME(ASWeapon, bIsReloading);
+	DOREPLIFETIME(ASWeapon, bExplosiveBullets);
 }

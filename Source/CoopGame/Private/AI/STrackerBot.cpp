@@ -154,7 +154,7 @@ void ASTrackerBot::OnCheckNearbyBots()
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DistanceToCheckNearbyBots, 12, FColor::White, false, 1.0f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), DistanceToCheckNearbyBots, 12, FColor::White, false, 1.0f);
 
 	// Calculate Power Level based on number of nearby bots
 	int32 NumOfBots = 0;
