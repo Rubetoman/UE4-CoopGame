@@ -258,7 +258,8 @@ void ASCharacter::ChangeMaxWalkSpeed(float NewSpeed)
 
 void ASCharacter::ClientChangeMaxWalkSpeed_Implementation(float NewSpeed)
 {
-	ChangeMaxWalkSpeed(NewSpeed);
+	if (GetLocalRole() != ROLE_Authority)
+		ChangeMaxWalkSpeed(NewSpeed);
 }
 
 bool ASCharacter::ClientChangeMaxWalkSpeed_Validate(float NewSpeed)
