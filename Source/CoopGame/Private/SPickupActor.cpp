@@ -7,6 +7,7 @@
 #include "Components\DecalComponent.h"
 #include "SPowerupActor.h"
 #include "TimerManager.h"
+#include "SCharacter.h"
 
 // Sets default values
 ASPickupActor::ASPickupActor()
@@ -54,10 +55,15 @@ void ASPickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (GetLocalRole() == ROLE_Authority && PowerUpInstance != nullptr)
 	{
-		PowerUpInstance->ActivatePowerup(OtherActor);
-		PowerUpInstance = nullptr;
+		// Cast actor to player
+		ASCharacter* Player = Cast<ASCharacter>(OtherActor);
+		if (Player != nullptr)
+		{
+			PowerUpInstance->ActivatePowerup(OtherActor);
+			PowerUpInstance = nullptr;
 
-		// Set Timer to respawn
-		GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CooldownDuration);
+			// Set Timer to respawn
+			GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CooldownDuration);
+		}
 	}
 }
