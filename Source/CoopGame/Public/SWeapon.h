@@ -46,6 +46,9 @@ public:
 	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	bool bExplosiveBullets;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -104,6 +107,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	UParticleSystem* TracerEffect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Powerup")
+	UParticleSystem* ExplosionEffect = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;

@@ -192,7 +192,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 		{
 			NextPathPoint = GetNextPathPoint();
 
-			DrawDebugString(GetWorld(), GetActorLocation(), "Target reached");
+			//DrawDebugString(GetWorld(), GetActorLocation(), "Target reached");
 		}
 		else
 		{

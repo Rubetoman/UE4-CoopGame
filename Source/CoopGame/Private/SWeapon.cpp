@@ -38,6 +38,8 @@ ASWeapon::ASWeapon()
 
 	NetUpdateFrequency = 66.0f;
 	MinNetUpdateFrequency = 33.0f;
+
+	bExplosiveBullets = false;
 }
 
 void ASWeapon::BeginPlay()
@@ -156,6 +158,9 @@ void ASWeapon::Fire()
 			float ActualDamage = BaseDamage;
 			if (SurfaceType == SURFACE_FLESHVULNERABLE)
 				ActualDamage *= VulnerableDamageMul;
+			
+			if (bExplosiveBullets)
+				ActualDamage *= 2.0f;
 
 			UGameplayStatics::ApplyPointDamage(HitActor, ActualDamage, ShotDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
 			PlayImpactEffects(SurfaceType, Hit.ImpactPoint);
@@ -246,6 +251,9 @@ void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoi
 		FVector ShotDirection = ImpactPoint - MuzzleLocation;
 		ShotDirection.Normalize();
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SelectedEffect, ImpactPoint, ShotDirection.Rotation());
+
+		if(bExplosiveBullets && ExplosionEffect != nullptr)
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, ImpactPoint, ShotDirection.Rotation());
 	}
 
 }

@@ -137,6 +137,9 @@ public:
 	UFUNCTION(Client, Reliable, WithValidation, BlueprintCallable, Category = "Event")
 	void ClientChangeMaxWalkSpeed(float NewSpeed);
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetExplosiveBullets(bool bExplosive);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
