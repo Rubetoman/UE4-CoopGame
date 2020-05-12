@@ -19,6 +19,8 @@ public:
 
 	virtual void StartPlay() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 
 	// Start Spawning Bots
@@ -37,8 +39,11 @@ protected:
 
 	void SpawnBotTimerElapsed();
 
+	void CheckWaveState();
+
 protected:
 	FTimerHandle TimerHandle_BotSpawner;
+	FTimerHandle TimerHandle_NextWaveStart;
 
 	// Bots to spawn in current wave
 	int32 NrOfBotsToSpawn;

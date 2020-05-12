@@ -35,6 +35,8 @@ protected:
 	float DefaultHealth;
 
 public:
+	float GetHealth() const;
+
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void Heal(float HealAmount);
 
