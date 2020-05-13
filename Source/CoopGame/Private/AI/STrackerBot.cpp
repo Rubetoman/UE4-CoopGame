@@ -118,6 +118,7 @@ void ASTrackerBot::SelfDestruct()
 	RadialForceComp->FireImpulse();
 
 	MeshComp->SetVisibility(false, true);
+	MeshComp->SetSimulatePhysics(false);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if (GetLocalRole() == ROLE_Authority)
