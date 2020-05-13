@@ -9,7 +9,7 @@
 UENUM(BluePrintType)
 enum class EWaveState : uint8
 {
-	PreparingNextWave,
+	WaitingToStart,
 	WaveInProgress,
 	WaitingToComplete,	// No longer spawning bots, waiting for players to kill remaining bots
 	WaveComplete,
@@ -23,6 +23,8 @@ UCLASS()
 class COOPGAME_API ASGameState : public AGameStateBase
 {
 	GENERATED_BODY()
+public:
+	void SetWaveState(EWaveState NewState);
 
 protected:
 	UFUNCTION()
@@ -30,8 +32,8 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameState")
 	void WaveStateChanged(EWaveState NewState, EWaveState OldState);
-	
-public:
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_WaveState, Category = "GameState")
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_WaveState, Category = "GameState")
 	EWaveState WaveState;
+
 };
