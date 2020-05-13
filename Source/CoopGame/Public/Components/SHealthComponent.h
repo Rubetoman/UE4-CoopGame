@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HealthComponent")
 	float DefaultHealth;
 
+	bool bIsDead;
+
 public:
 	float GetHealth() const;
 

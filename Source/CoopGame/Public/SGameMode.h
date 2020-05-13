@@ -8,6 +8,8 @@
 
 enum class EWaveState : uint8;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor, AController*, KillerController);
+
 /**
  * 
  */
@@ -47,6 +49,10 @@ protected:
 	void GameOver();
 
 	void SetWaveState(EWaveState NewState);
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "GameMode")
+	FOnActorKilled OnActorKilled;
 
 protected:
 	FTimerHandle TimerHandle_BotSpawner;
