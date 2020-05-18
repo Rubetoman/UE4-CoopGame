@@ -47,7 +47,8 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	RateOfFire = 300;
+	RateOfFire = 300.0f;
+	BulletSpread = 2.0f;
 	TimeBetweenShots = 60 / RateOfFire;
 
 	MaxFireTypes = 1;
@@ -134,6 +135,10 @@ void ASWeapon::Fire()
 		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 		FVector ShotDirection = EyeRotation.Vector();
+
+		// Bullet Spread
+		float HalfRad = FMath::DegreesToRadians(BulletSpread);
+		ShotDirection = FMath::VRandCone(ShotDirection, HalfRad, HalfRad);
 
 		FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
 
