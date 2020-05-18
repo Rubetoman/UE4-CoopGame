@@ -27,6 +27,8 @@ protected:
 
 	FVector GetNextPathPoint();
 
+	void RefreshPath();
+
 	void SelfDestruct();
 
 	void DamageSelf();
@@ -98,6 +100,8 @@ protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_PowerLevel, EditDefaultsOnly, Category = "TrackerBot")
 	int32 PowerLevel;
+
+	FTimerHandle TimerHandle_RefreshPath;
 
 public:	
 	// Called every frame
