@@ -49,10 +49,6 @@ protected:
 	void BeginZoom();
 	void EndZoom();
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void StartFire();
-	void StopFire();
-
 	void Reload();
 
 	void ToggleFireType();
@@ -131,6 +127,12 @@ protected:
 	float LastChangeTime;
 
 public:	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void StopFire();
+
 	UFUNCTION(BlueprintCallable, Category = "Event")
 	void ChangeMaxWalkSpeed(float NewSpeed);
 
