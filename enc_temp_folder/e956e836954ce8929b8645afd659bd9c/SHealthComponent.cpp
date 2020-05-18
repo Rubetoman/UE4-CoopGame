@@ -76,7 +76,7 @@ void USHealthComponent::HandleTakeAnyDamage(AActor* DamagedActor, float Damage, 
 {
 	if (Damage <= 0.0f || bIsDead) return;
 
-	if (DamagedActor != DamageCauser && IsFriendly(DamagedActor, DamageCauser))
+	if (IsFriendly(DamagedActor, DamageCauser))
 	{
 		// They are friends
 		return;
