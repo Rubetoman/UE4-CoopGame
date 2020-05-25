@@ -33,23 +33,15 @@ ASWeapon::ASWeapon()
 	BaseDamage = 20.0f;
 	VulnerableDamageMul = 4.0f;
 
+	RateOfFire = 300.0f;
+	BulletSpread = 2.0f;
+
 	bIsReloading = false;
 
 	SetReplicates(true);
 
 	NetUpdateFrequency = 66.0f;
 	MinNetUpdateFrequency = 33.0f;
-
-	bExplosiveBullets = false;
-}
-
-void ASWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-	RateOfFire = 300.0f;
-	BulletSpread = 2.0f;
-	TimeBetweenShots = 60 / RateOfFire;
 
 	MaxFireTypes = 1;
 	FireType = 0;
@@ -58,6 +50,18 @@ void ASWeapon::BeginPlay()
 	CurrentAmmo = MaxAmmo;
 
 	ReloadTime = 2.0f;
+
+	bExplosiveBullets = false;
+
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void ASWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	TimeBetweenShots = 60 / RateOfFire;
 }
 
 void ASWeapon::StartFire()
