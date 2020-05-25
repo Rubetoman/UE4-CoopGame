@@ -99,6 +99,12 @@ void ASWeapon::StartReload()
 {
 	if (CurrentAmmo < MaxAmmo)
 	{
+		// Networking
+		if (GetLocalRole() < ROLE_Authority)
+		{
+			ServerStartReload();
+		}
+
 		GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
 		bIsReloading = true;
 	}
@@ -200,7 +206,7 @@ void ASWeapon::Fire()
 		if (DebugWeaponDrawing > 0)
 		{
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
-			DrawDebugPoint(GetWorld(), Hit.ImpactPoint, 5.0f, FColor::Red, true, 10.0, 5.0f);
+			DrawDebugPoint(GetWorld(), TracerEndPoint, 5.0f, FColor::Red, false, 10.0, 5.0f);
 		}
 
 		PlayFireEffects(TracerEndPoint);
@@ -232,6 +238,16 @@ void ASWeapon::Reload()
 	CurrentAmmo = MaxAmmo;
 	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
 	StopReload();
+}
+
+void ASWeapon::ServerStartReload_Implementation()
+{
+	StartReload();
+}
+
+bool ASWeapon::ServerStartReload_Validate()
+{
+	return true;
 }
 
 void ASWeapon::PlayFireEffects(FVector TracerEndPoint)

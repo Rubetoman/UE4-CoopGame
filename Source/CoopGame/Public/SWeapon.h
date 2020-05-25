@@ -37,6 +37,10 @@ public:
 	void StopFire();
 
 	void StartReload();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerStartReload();
+
 	void StopReload();
 
 	virtual void ToggleFireType();
