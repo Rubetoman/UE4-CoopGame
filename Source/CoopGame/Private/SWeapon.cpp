@@ -35,6 +35,11 @@ ASWeapon::ASWeapon()
 
 	RateOfFire = 300.0f;
 	BulletSpread = 2.0f;
+	BulletSpreadMin = 2.0f;
+	BulletSpreadMax = 2.0f;
+	BulletSpreadRate = 0.2f;
+
+	ShotNumber = 0;
 
 	bIsReloading = false;
 
@@ -52,6 +57,7 @@ ASWeapon::ASWeapon()
 	ReloadTime = 2.0f;
 
 	bExplosiveBullets = false;
+	bInAimingMode = false;
 
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -67,6 +73,13 @@ void ASWeapon::BeginPlay()
 void ASWeapon::StartFire()
 {
 	float FirstDelay = FMath::Max(LastFireTime + TimeBetweenShots - GetWorld()->TimeSeconds, 0.0f);
+	if (FirstDelay <= 0.0f)
+	{
+		// Reset bullet spread
+		BulletSpread = BulletSpreadMin;
+		ShotNumber = 0;
+	}
+
 	if (FireType == 0)
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
@@ -141,8 +154,15 @@ void ASWeapon::Fire()
 		FVector ShotDirection = EyeRotation.Vector();
 
 		// Bullet Spread
-		float HalfRad = FMath::DegreesToRadians(BulletSpread);
+		float HalfRad = FMath::DegreesToRadians(bInAimingMode? BulletSpread * 0.4 : BulletSpread);
 		ShotDirection = FMath::VRandCone(ShotDirection, HalfRad, HalfRad);
+
+		// Add to bullet spread from automatic fire.
+		if (BulletSpreadRate > 0 && BulletSpread < BulletSpreadMax && ShotNumber > 0)
+		{
+			BulletSpread = BulletSpread + BulletSpreadRate;
+		}
+		++ShotNumber;
 
 		FVector TraceEnd = EyeLocation + (ShotDirection * 10000);
 
@@ -177,8 +197,11 @@ void ASWeapon::Fire()
 			TracerEndPoint = Hit.ImpactPoint;
 		}
 
-		if(DebugWeaponDrawing > 0)
+		if (DebugWeaponDrawing > 0)
+		{
 			DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+			DrawDebugPoint(GetWorld(), Hit.ImpactPoint, 5.0f, FColor::Red, true, 10.0, 5.0f);
+		}
 
 		PlayFireEffects(TracerEndPoint);
 

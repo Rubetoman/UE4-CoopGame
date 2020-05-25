@@ -50,6 +50,8 @@ public:
 	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Powerup")
 	bool bExplosiveBullets;
 
+	bool bInAimingMode;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -77,7 +79,16 @@ protected:
 
 	// Bullet Spread in Degrees
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 0.0f))
+	float BulletSpreadMin;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 0.0f))
+	float BulletSpreadMax;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (ClampMin = 0.0f))
+	float BulletSpreadRate;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
 	float BulletSpread;
+
+	int32 ShotNumber;
 
 	// Derived from RateOfFire
 	float TimeBetweenShots;

@@ -107,11 +107,15 @@ void ASCharacter::EndCrouch()
 void ASCharacter::BeginZoom()
 {
 	TargetFOV = ZoomedFOV;
+	if (CurrentWeapon.Weapon != nullptr)
+		CurrentWeapon.Weapon->bInAimingMode = true;
 }
 
 void ASCharacter::EndZoom()
 {
 	TargetFOV = DefaultFOV;
+	if (CurrentWeapon.Weapon != nullptr)
+		CurrentWeapon.Weapon->bInAimingMode = false;
 }
 
 void ASCharacter::StartFire()
