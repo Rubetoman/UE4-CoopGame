@@ -60,6 +60,9 @@ protected:
 	float MovementForce;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	float JumpForce;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	bool bUseVelocityChange;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")

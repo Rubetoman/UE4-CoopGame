@@ -56,6 +56,7 @@ ASTrackerBot::ASTrackerBot()
 
 	bUseVelocityChange = false;
 	MovementForce = 1000.0f;
+	JumpForce = 10.0f;
 
 	RequiredDistanceToTarget = 100;
 
@@ -239,6 +240,12 @@ void ASTrackerBot::Tick(float DeltaTime)
 		}
 		else
 		{
+			if (NextPathPoint.Z > GetActorLocation().Z)
+			{
+				// Jump
+				MeshComp->AddImpulse(FVector::UpVector * JumpForce, NAME_None, true);
+			}
+
 			// Keep moving towards next target
 			FVector ForceDirection = NextPathPoint - GetActorLocation();
 			ForceDirection.Normalize();
