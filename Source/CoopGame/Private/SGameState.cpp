@@ -16,6 +16,11 @@ void ASGameState::SetWaveState(EWaveState NewState)
 	}
 }
 
+EWaveState ASGameState::GetWaveState()
+{
+	return WaveState;
+}
+
 void ASGameState::OnRep_WaveState(EWaveState OldState)
 {
 	WaveStateChanged(WaveState, OldState);

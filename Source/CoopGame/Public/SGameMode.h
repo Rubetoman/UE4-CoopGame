@@ -48,6 +48,9 @@ protected:
 	void CheckAnyPlayerAlive();
 	void GameOver();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	void OnGameOver();
+
 	void SetWaveState(EWaveState NewState);
 
 	void RestartDeadPlayers();

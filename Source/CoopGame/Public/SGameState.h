@@ -25,6 +25,7 @@ class COOPGAME_API ASGameState : public AGameStateBase
 	GENERATED_BODY()
 public:
 	void SetWaveState(EWaveState NewState);
+	EWaveState GetWaveState();
 
 protected:
 	UFUNCTION()

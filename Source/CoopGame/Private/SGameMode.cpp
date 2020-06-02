@@ -31,8 +31,12 @@ void ASGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	CheckWaveState();
-	CheckAnyPlayerAlive();
+	ASGameState* GS = GetGameState<ASGameState>();
+	if (ensureAlways(GS != nullptr) && GS->GetWaveState() != EWaveState::GameOver)
+	{
+		CheckWaveState();
+		CheckAnyPlayerAlive();
+	}
 }
 
 void ASGameMode::StartWave()
@@ -128,7 +132,7 @@ void ASGameMode::GameOver()
 	EndWave();
 	// @TODO: Finish up the match, present 'game over' to players.
 	SetWaveState(EWaveState::GameOver);
-
+	OnGameOver();
 	UE_LOG(LogTemp, Log, TEXT("GAME OVER! Players Died"));
 }
 
