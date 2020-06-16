@@ -114,7 +114,7 @@ void ASGameMode::CheckAnyPlayerAlive()
 			if (MyPawn != nullptr)
 			{
 				USHealthComponent* HealthComp = Cast<USHealthComponent>(MyPawn->GetComponentByClass(USHealthComponent::StaticClass()));
-				if (ensure(HealthComp) && HealthComp->GetHealth() > 0.0f)
+				if (HealthComp && HealthComp->GetHealth() > 0.0f)
 				{
 					// A player is still alive
 					return;

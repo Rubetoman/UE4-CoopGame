@@ -15,6 +15,8 @@
 #include "TimerManager.h"
 #include "Net\UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/SpectatorPawn.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -234,12 +236,27 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 		bDied = true;
 
 		GetMovementComponent()->StopMovementImmediately();
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-		DetachFromControllerPendingDestroy();
+		FTimerHandle TimerHandle_PawnDeathTime;
+		GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
 
 		SetLifeSpan(10.0f);
+		CurrentWeapon.Weapon->SetLifeSpan(10.0f);
+		OnDeath();
 	}
+}
+
+void ASCharacter::Death()
+{
+	// Spawn an spectator pawn and possess
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	ASpectatorPawn* SpectatorPawn = GetWorld()->SpawnActor<ASpectatorPawn>(SpectatorPawnClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	GetController()->Possess(SpectatorPawn);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//DetachFromControllerPendingDestroy();
 }
 
 ASWeapon* ASCharacter::GetCurrentWeapon()

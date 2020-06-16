@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class ASWeapon;
 class USHealthComponent;
+class ASpectatorPawn;
 
 USTRUCT()
 struct FWeaponStruct
@@ -72,6 +73,11 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void OnToggleFireType();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
+	void OnDeath();
+
+	void Death();
+
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ASWeapon* GetCurrentWeapon();
 
@@ -100,6 +106,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	FWeaponStruct CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	TSubclassOf<ASpectatorPawn> SpectatorPawnClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	TArray<TSubclassOf<ASWeapon>> StarterWeaponClasses;
