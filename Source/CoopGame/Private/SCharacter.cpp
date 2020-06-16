@@ -237,7 +237,6 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 
 		// Disable all movement
 		GetMovementComponent()->StopMovementImmediately();
-		
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
 		bUseControllerRotationPitch = false;
@@ -250,6 +249,8 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 				DisableInput(PlayerController);
 		}
 		
+		StopFire();
+
 		FTimerHandle TimerHandle_PawnDeathTime;
 		GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
 
@@ -266,6 +267,7 @@ void ASCharacter::OnClientDeath_Implementation()
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		if (PlayerController)
 			DisableInput(PlayerController);
+		StopFire();
 	}
 }
 
