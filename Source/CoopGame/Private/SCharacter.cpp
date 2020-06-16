@@ -235,8 +235,12 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 		// Die
 		bDied = true;
 
+		// Disable all movement
 		GetMovementComponent()->StopMovementImmediately();
-
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
+		bUseControllerRotationPitch = false;
+		
 		FTimerHandle TimerHandle_PawnDeathTime;
 		GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
 
