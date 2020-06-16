@@ -237,17 +237,41 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 
 		// Disable all movement
 		GetMovementComponent()->StopMovementImmediately();
+		
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
 		bUseControllerRotationPitch = false;
+
+		// If player is server disable Input, if not it will called for owning client inside OnClientDeath()
+		if (GetLocalRole() == ROLE_Authority)
+		{
+			APlayerController* PlayerController = Cast<APlayerController>(GetController());
+			if (PlayerController)
+				DisableInput(PlayerController);
+		}
 		
 		FTimerHandle TimerHandle_PawnDeathTime;
 		GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
 
 		SetLifeSpan(10.0f);
 		CurrentWeapon.Weapon->SetLifeSpan(10.0f);
-		OnDeath();
+		OnClientDeath();
 	}
+}
+
+void ASCharacter::OnClientDeath_Implementation()
+{
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
+			DisableInput(PlayerController);
+	}
+}
+
+bool ASCharacter::OnClientDeath_Validate()
+{
+	return true;
 }
 
 void ASCharacter::Death()

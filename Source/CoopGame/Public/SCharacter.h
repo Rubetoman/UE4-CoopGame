@@ -73,8 +73,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void OnToggleFireType();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
-	void OnDeath();
+	UFUNCTION(Client, Reliable, WithValidation, Category = "Event")
+	void OnClientDeath();
 
 	void Death();
 
