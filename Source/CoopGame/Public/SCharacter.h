@@ -76,6 +76,9 @@ protected:
 	UFUNCTION(Client, Reliable, WithValidation, Category = "Event")
 	void OnClientDeath();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
+	void OnDeath();
+
 	void Death();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")

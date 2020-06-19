@@ -244,6 +244,7 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 		// If player is server disable Input, if not it will called for owning client inside OnClientDeath()
 		if (GetLocalRole() == ROLE_Authority)
 		{
+			OnDeath(); // Blueprint event
 			APlayerController* PlayerController = Cast<APlayerController>(GetController());
 			if (PlayerController)
 				DisableInput(PlayerController);
@@ -268,6 +269,7 @@ void ASCharacter::OnClientDeath_Implementation()
 		if (PlayerController)
 			DisableInput(PlayerController);
 		StopFire();
+		OnDeath(); // Blueprint event
 	}
 }
 
