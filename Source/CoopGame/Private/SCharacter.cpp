@@ -367,6 +367,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, this, &ASCharacter::StartNextWeapon);
 	PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &ASCharacter::StartPreviousWeapon);
 
+	PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ASCharacter::ToggleMenu);
+
 	/* Weapon 1 to 9*/
 	for(int i = 1; i < LAST_WEAPON_KEY; ++i)
 	{

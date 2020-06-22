@@ -57,6 +57,9 @@ protected:
 
 	void StartPreviousWeapon();
 	void PreviousWeapon();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Player")
+	void ToggleMenu();
 	
 	UFUNCTION()
 	void StartEquipWeapon(uint8 WeaponIndex);
