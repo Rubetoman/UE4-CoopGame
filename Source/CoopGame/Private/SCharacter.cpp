@@ -251,9 +251,18 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 		}
 		
 		StopFire();
-
-		FTimerHandle TimerHandle_PawnDeathTime;
-		GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
+		if (IsPlayerControlled())
+		{
+			// Player Controlled
+			FTimerHandle TimerHandle_PawnDeathTime;
+			GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
+		}
+		else
+		{
+			// AI Controlled
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DetachFromControllerPendingDestroy();
+		}
 
 		SetLifeSpan(10.0f);
 		CurrentWeapon.Weapon->SetLifeSpan(10.0f);
