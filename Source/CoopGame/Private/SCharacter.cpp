@@ -44,6 +44,9 @@ ASCharacter::ASCharacter()
 
 	bDied = false; 
 	bIsChangingWeapon = false;
+
+	DeadPostProEffect.bOverride_ColorSaturation = true;
+	DeadPostProEffect.ColorSaturation = FVector4(0.2, 0.2, 0.2, 1.0f);
 }
 
 // Called when the game starts or when spawned
@@ -256,6 +259,9 @@ void ASCharacter::OnHealthChanged(USHealthComponent* OwningHealthComp, float Hea
 			// Player Controlled
 			FTimerHandle TimerHandle_PawnDeathTime;
 			GetWorldTimerManager().SetTimer(TimerHandle_PawnDeathTime, this, &ASCharacter::Death, 5.0f);
+
+			// Apply dead post processing effect
+			CameraComp->PostProcessSettings = DeadPostProEffect;
 		}
 		else
 		{
@@ -278,6 +284,7 @@ void ASCharacter::OnClientDeath_Implementation()
 		if (PlayerController)
 			DisableInput(PlayerController);
 		StopFire();
+		CameraComp->PostProcessSettings = DeadPostProEffect;	// Apply dead post processing effect
 		OnDeath(); // Blueprint event
 	}
 }

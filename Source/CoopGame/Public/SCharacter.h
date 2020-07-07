@@ -139,6 +139,9 @@ protected:
 
 	float LastChangeTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	FPostProcessSettings DeadPostProEffect;
+
 public:	
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void StartFire();
