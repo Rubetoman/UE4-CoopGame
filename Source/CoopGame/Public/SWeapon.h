@@ -34,6 +34,8 @@ public:
 	// Sets default values for this actor's properties
 	ASWeapon();
 
+	//////////////////////////////////////////////////////////////////////////
+	// Weapon Input
 	virtual void StartFire();
 	void StopFire();
 
@@ -49,6 +51,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	virtual FText GetCurrentFireTypeName();
 
+public:
 	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = "Weapon")
 	bool bIsReloading;
 
@@ -57,22 +60,11 @@ public:
 
 	bool bInAimingMode;
 
-	// Sound
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	USoundCue* FireSound = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	USoundCue* FireFinishSound = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	USoundCue* FireEmptySound = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	USoundCue* ReloadSound = nullptr;
-
 protected:
 	virtual void BeginPlay() override;
 
+	//////////////////////////////////////////////////////////////////////////
+	// Weapon Input
 	virtual void Fire();
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -80,18 +72,25 @@ protected:
 
 	void Reload();
 
+	//////////////////////////////////////////////////////////////////////////
+	// Replication & effects
+
+	/** Helper for playing sounds */
+	UAudioComponent* PlayWeaponSound(USoundCue* Sound);
+
+	void PlayReloadSound();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Replication & effects
 	void PlayFireEffects(FVector TracerEndPoint);
 
 	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
 
-	// Helper for playing sounds
-	UAudioComponent* PlayWeaponSound(USoundCue* Sound);
-
 	UFUNCTION()
 	void OnRep_HitScanTrace();
 
-	FTimerHandle TimerHandle_TimeBetweenShots;
 
+protected:
 	float LastFireTime;
 
 	// RPM - Bullets per minute fired by weapon
@@ -148,8 +147,29 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Powerup")
 	UParticleSystem* ExplosionEffect = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	/** Explosion sound (when explosive power up is active)*/
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundCue* ExplosionSound = nullptr;
+
+	/** Looped fire sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireSound = nullptr;
+
+	/** End fire sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireFinishSound = nullptr;
+
+	/** Empty magazine fire sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireEmptySound = nullptr;
+
+	/** Reload sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* ReloadSound = nullptr;
+
+	/** Offset to play reload sound (at the start and end of the reload) */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	float ReloadSoundOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;
@@ -166,7 +186,11 @@ protected:
 	UPROPERTY(Replicated, VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	uint8 CurrentAmmo;
 
+	// Timer Handles
+	FTimerHandle TimerHandle_TimeBetweenShots;
 	FTimerHandle TimerHandle_ReloadTime;
+	FTimerHandle TimerHandle_FirstReloadSoundTime;
+	FTimerHandle TimerHandle_SecondReloadSoundTime;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float ReloadTime;

@@ -56,6 +56,7 @@ ASWeapon::ASWeapon()
 	CurrentAmmo = MaxAmmo;
 
 	ReloadTime = 2.0f;
+	ReloadSoundOffset = 0.3f;
 
 	bExplosiveBullets = false;
 	bInAimingMode = false;
@@ -115,6 +116,11 @@ void ASWeapon::StartReload()
 		}
 
 		GetWorldTimerManager().SetTimer(TimerHandle_ReloadTime, this, &ASWeapon::Reload, ReloadTime);
+
+		// Play reload sounds with offset
+		GetWorldTimerManager().SetTimer(TimerHandle_FirstReloadSoundTime, this, &ASWeapon::PlayReloadSound, ReloadSoundOffset);
+		GetWorldTimerManager().SetTimer(TimerHandle_SecondReloadSoundTime, this, &ASWeapon::PlayReloadSound, ReloadTime - ReloadSoundOffset);
+
 		bIsReloading = true;
 	}
 }
@@ -122,6 +128,8 @@ void ASWeapon::StartReload()
 void ASWeapon::StopReload()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
+	GetWorldTimerManager().ClearTimer(TimerHandle_FirstReloadSoundTime);
+	GetWorldTimerManager().ClearTimer(TimerHandle_SecondReloadSoundTime);
 	bIsReloading = false;
 }
 
@@ -257,6 +265,11 @@ void ASWeapon::Reload()
 	CurrentAmmo = MaxAmmo;
 	GetWorldTimerManager().ClearTimer(TimerHandle_ReloadTime);
 	StopReload();
+}
+
+void ASWeapon::PlayReloadSound()
+{
+	PlayWeaponSound(ReloadSound);
 }
 
 void ASWeapon::ServerStartReload_Implementation()
