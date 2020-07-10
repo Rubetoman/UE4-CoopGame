@@ -7,6 +7,7 @@
 #include "SWeapon.generated.h"
 
 class USkeletalMeshComponent;
+class UAudioComponent;
 class UDamageType;
 class USoundCue;
 
@@ -56,6 +57,19 @@ public:
 
 	bool bInAimingMode;
 
+	// Sound
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireFinishSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* FireEmptySound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* ReloadSound = nullptr;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -69,6 +83,9 @@ protected:
 	void PlayFireEffects(FVector TracerEndPoint);
 
 	void PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoint);
+
+	// Helper for playing sounds
+	UAudioComponent* PlayWeaponSound(USoundCue* Sound);
 
 	UFUNCTION()
 	void OnRep_HitScanTrace();
@@ -157,4 +174,6 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_HitScanTrace)
 	FHitScanTrace HitScanTrace;
 
+	UPROPERTY(Transient)
+	UAudioComponent* FireAC;
 };

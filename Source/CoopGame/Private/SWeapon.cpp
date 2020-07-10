@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components\AudioComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include  "PhysicalMaterials/PhysicalMaterial.h"
 #include "CoopGame\CoopGame.h"
@@ -93,6 +94,14 @@ void ASWeapon::StartFire()
 void ASWeapon::StopFire()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_TimeBetweenShots);
+
+	if (FireAC != nullptr)
+	{
+		FireAC->FadeOut(0.1f, 0.0f);
+		FireAC = nullptr;
+
+		PlayWeaponSound(FireFinishSound);
+	}
 }
 
 void ASWeapon::StartReload()
@@ -136,8 +145,12 @@ FText ASWeapon::GetCurrentFireTypeName()
 
 void ASWeapon::Fire()
 {
-	if (CurrentAmmo <= 0) return;
-
+	if (CurrentAmmo <= 0)
+	{
+		StopFire();
+		PlayWeaponSound(FireEmptySound);
+		return;
+	}
 	// Stop reload
 	if (bIsReloading)
 		StopReload();
@@ -220,6 +233,12 @@ void ASWeapon::Fire()
 		LastFireTime = GetWorld()->TimeSeconds;
 
 		--CurrentAmmo;
+	}
+
+	// Play sound
+	if (FireAC == NULL)
+	{
+		FireAC = PlayWeaponSound(FireSound);
 	}
 }
 
@@ -308,6 +327,18 @@ void ASWeapon::PlayImpactEffects(EPhysicalSurface SurfaceType, FVector ImpactPoi
 		}
 	}
 
+}
+
+UAudioComponent* ASWeapon::PlayWeaponSound(USoundCue* Sound)
+{
+	UAudioComponent* AC = NULL;
+	AActor* MyOwner = GetOwner();
+	if (Sound != nullptr && MyOwner != nullptr)
+	{
+		AC = UGameplayStatics::SpawnSoundAttached(Sound, MyOwner->GetRootComponent());
+	}
+
+	return AC;
 }
 
 void ASWeapon::OnRep_HitScanTrace()
