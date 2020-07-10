@@ -85,10 +85,20 @@ void ASWeapon::StartFire()
 	if (FireType == 0)
 	{
 		GetWorldTimerManager().SetTimer(TimerHandle_TimeBetweenShots, this, &ASWeapon::Fire, TimeBetweenShots, true, FirstDelay);
+
+		// Play looped fire sound
+		if (FireAC == NULL && CurrentAmmo > 0)
+		{
+			FireAC = PlayWeaponSound(LoopedFireSound);
+		}
 	}
 	else if (FirstDelay <= 0.0f)
 	{
 		Fire();
+
+		// Play single fire sound
+		if (CurrentAmmo > 0)
+			PlayWeaponSound(SingleFireSound);
 	}	
 }
 
@@ -241,12 +251,6 @@ void ASWeapon::Fire()
 		LastFireTime = GetWorld()->TimeSeconds;
 
 		--CurrentAmmo;
-	}
-
-	// Play sound
-	if (FireAC == NULL)
-	{
-		FireAC = PlayWeaponSound(FireSound);
 	}
 }
 

@@ -151,9 +151,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundCue* ExplosionSound = nullptr;
 
+	/** Fire sound (no loop) */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* SingleFireSound = nullptr;
+
 	/** Looped fire sound */
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	USoundCue* FireSound = nullptr;
+	USoundCue* LoopedFireSound = nullptr;
 
 	/** End fire sound */
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
