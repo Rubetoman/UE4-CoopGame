@@ -175,6 +175,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	float ReloadSoundOffset;
 
+	/** Normal hit sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* NormalHitSound = nullptr;
+
+	/** Critical hit sound */
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* CriticalHitSound = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<UCameraShake> FireCamShake;
 

@@ -224,7 +224,14 @@ void ASWeapon::Fire()
 
 			float ActualDamage = BaseDamage;
 			if (SurfaceType == SURFACE_FLESHVULNERABLE)
+			{
 				ActualDamage *= VulnerableDamageMul;
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), CriticalHitSound, Hit.Location);
+			}
+			else
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), NormalHitSound, Hit.Location);
+			}
 			
 			if (bExplosiveBullets)
 				ActualDamage *= 2.0f;
