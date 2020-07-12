@@ -371,6 +371,11 @@ void ASWeapon::OnRep_HitScanTrace()
 	PlayFireEffects(HitScanTrace.TraceTo);
 
 	PlayImpactEffects(HitScanTrace.SurfaceType, HitScanTrace.TraceTo);
+
+	if (FireAC == NULL && CurrentAmmo > 0)
+	{
+		FireAC = PlayWeaponSound(LoopedFireSound);
+	}
 }
 
 void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
