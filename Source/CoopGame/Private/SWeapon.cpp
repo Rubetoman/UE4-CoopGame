@@ -377,8 +377,10 @@ void ASWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME_CONDITION(ASWeapon, CurrentAmmo, COND_OwnerOnly);
+
 	DOREPLIFETIME_CONDITION(ASWeapon, HitScanTrace, COND_SkipOwner);
-	DOREPLIFETIME(ASWeapon, CurrentAmmo);
-	DOREPLIFETIME(ASWeapon, bIsReloading);
+	DOREPLIFETIME_CONDITION(ASWeapon, bIsReloading, COND_SkipOwner);
+
 	DOREPLIFETIME(ASWeapon, bExplosiveBullets);
 }
